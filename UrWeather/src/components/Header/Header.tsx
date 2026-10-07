@@ -65,23 +65,30 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    setIsSearching(false);
     const timer = setTimeout(async () => {
       if (query.length >= 2) {
         setIsSearching(true);
         try {
           const res = await searchCity(query, lang);
-          setResults(res);
-          setShowDropdown(true);
+          if (!cancelled) {
+            setResults(res);
+            setShowDropdown(true);
+          }
         } catch { /* ignore */ } finally {
-          setIsSearching(false);
+          if (!cancelled) setIsSearching(false);
         }
       } else {
         setResults([]);
         setShowDropdown(false);
       }
     }, 500);
-    return () => clearTimeout(timer);
-  }, [query]);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query, lang]);
 
   return (
     <header className="glass-card flex flex-col md:flex-row justify-between items-center px-6 py-4 mb-6 z-20 relative gap-4">
@@ -102,6 +109,7 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
             placeholder={t.searchPlaceholder}
+            aria-label={t.searchPlaceholder}
             className="w-full bg-background/20 border-white/10 pl-10 focus-visible:ring-primary/50 text-white placeholder:text-white/40"
             data-testid="input-city-search"
           />

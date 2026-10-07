@@ -27,10 +27,14 @@ export function useWeather(lang = 'en') {
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
   const [scene, setScene] = useState<SceneType>('clear');
+  const requestIdRef = useRef(0);
+  const requestedLocationRef = useRef<LocationData>(BERLIN);
   const langRef = useRef(lang);
   langRef.current = lang;
 
   const loadWeatherForLocation = useCallback(async (lat: number, lon: number, cityName: string) => {
+    const requestId = ++requestIdRef.current;
+    requestedLocationRef.current = { lat, lon, city: cityName };
     setLoading(true);
     setError(null);
     try {
@@ -42,28 +46,37 @@ export function useWeather(lang = 'en') {
         setCachedWeather(cacheKey, data);
       }
 
+      // An older request must not replace a more recent city selection.
+      if (requestId !== requestIdRef.current) return;
       setWeather(data);
       setLocation({ lat, lon, city: cityName });
       setScene(getWeatherScene(data.current.weathercode));
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to fetch weather');
+      if (requestId === requestIdRef.current) {
+        setError(e instanceof Error ? e.message : 'Failed to fetch weather');
+      }
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, []);
 
+  const retry = useCallback(() => {
+    const { lat, lon, city } = requestedLocationRef.current;
+    return loadWeatherForLocation(lat, lon, city);
+  }, [loadWeatherForLocation]);
+
   useEffect(() => {
     let cancelled = false;
+    let geoTimer: ReturnType<typeof setTimeout> | undefined;
     const currentLang = langRef.current;
     const acceptLang = currentLang === 'ru' ? 'ru,en' : 'en';
 
     // Load Berlin immediately
     loadWeatherForLocation(BERLIN.lat, BERLIN.lon, BERLIN.city);
+    const initialRequestId = requestIdRef.current;
 
     // In parallel, try to get actual location (up to 5s)
     if (navigator.geolocation) {
-      const timer = setTimeout(() => {/* timeout guard */}, 5000);
-
       Promise.race<{ lat: number; lon: number }>([
         new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(
@@ -72,11 +85,14 @@ export function useWeather(lang = 'en') {
             { timeout: 4500, maximumAge: 60000 }
           );
         }),
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('geo timeout')), 5000)),
+        new Promise<never>((_, reject) => {
+          geoTimer = setTimeout(() => reject(new Error('geo timeout')), 5000);
+        }),
       ])
         .then(async (loc) => {
-          clearTimeout(timer);
-          if (cancelled) return;
+          clearTimeout(geoTimer);
+          // Automatic detection yields to a manual city selection or retry.
+          if (cancelled || requestIdRef.current !== initialRequestId) return;
           let city = 'My Location';
           try {
             const r = await fetch(
@@ -87,17 +103,21 @@ export function useWeather(lang = 'en') {
               city = d.address?.city || d.address?.town || d.address?.village || 'My Location';
             }
           } catch { /* ignore */ }
-          if (!cancelled) {
+          if (!cancelled && requestIdRef.current === initialRequestId) {
             loadWeatherForLocation(loc.lat, loc.lon, city);
           }
         })
         .catch(() => {
-          clearTimeout(timer);
+          clearTimeout(geoTimer);
         });
     }
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimeout(geoTimer);
+      ++requestIdRef.current;
+    };
   }, [loadWeatherForLocation]);
 
-  return { weather, loading, error, location, scene, loadWeatherForLocation };
+  return { weather, loading, error, location, scene, loadWeatherForLocation, retry };
 }

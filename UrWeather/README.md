@@ -1,127 +1,47 @@
-# UrWeather
+# UrWeather app
 
-[English](#english) · [Русский](#русский)
-
----
+[Full project documentation / Документация проекта](../README.md)
 
 ## English
 
-A weather dashboard that runs on your local machine and is accessible from any device on your network — phone, tablet, Smart TV.
+This directory contains the React app, `package.json` and optional Python helpers.
 
-No API keys. No accounts. No setup headache.
+Requires Node.js 22.12+ recommended, or Node.js 20.19+ on the Node 20 release line. From this directory:
 
-### What you get
-
-- Current conditions, 24-hour chart, 7-day forecast
-- Click any day to see its hourly breakdown
-- Animated backgrounds (rain, snow, sun, fog, storm) matching the actual weather
-- EN / RU language toggle
-- Works on any device in your Wi-Fi network
-
-### Requirements
-
-- Python 3.8+
-- Node.js 18+
-
-### Getting started
-
-**1. Run setup (one time only)**
-
-```
-python setup.py
+```bash
+npm ci
+npm run dev
 ```
 
-**2. Start the server**
+Open the local or network URL printed by Vite. Fresh weather and city search require internet access; no API keys are needed. Berlin is the default city, with optional browser geolocation and manual search.
 
+For the optional helpers, install Python 3.8+ and run `python setup.py`, then `python start.py` from this directory. Use `python3` if needed.
+
+```bash
+npm test             # Regression tests
+npm run test:watch   # Watch tests during development
+npm run build        # Production build in dist/
+npm run preview      # Serve the production build locally
 ```
-python start.py
-```
-
-You'll see:
-
-```
-  ╔══════════════════════════════════════════╗
-  ║      UrWeather is running!               ║
-  ╚══════════════════════════════════════════╝
-
-  This device:
-    http://localhost:5173
-
-  Phone / tablet / TV:
-    http://192.168.1.42:5173
-```
-
-### No API keys needed
-
-- **[Open-Meteo](https://open-meteo.com)** — weather data (free, no registration)
-- **[OpenStreetMap Nominatim](https://nominatim.org)** — city search (free, no registration)
-
-### Troubleshooting
-
-**Node.js not found** — Download the LTS version from [nodejs.org](https://nodejs.org) and restart your terminal.
-
-**Can't open from my phone** — Make sure both devices are on the same Wi-Fi. On Windows, allow Node.js through the firewall when prompted.
-
-**Port 5173 is busy** — Vite will automatically try the next available port.
-
----
 
 ## Русский
 
-Погодный дашборд, который запускается на вашем компьютере и доступен с любого устройства в сети — телефон, планшет, Smart TV.
+В этой папке находятся React приложение, `package.json` и необязательные Python скрипты.
 
-Без API ключей. Без регистрации. Установка одной командой.
+Рекомендуется Node.js 22.12+; также подходит Node.js 20.19+ из ветки Node 20. Запускайте из этой папки:
 
-### Что умеет
-
-- Текущая погода, почасовой график на 24 часа, прогноз на 7 дней
-- Клик по дню — почасовая разбивка для выбранного дня
-- Анимированный фон (дождь, снег, солнце, туман, гроза) под реальную погоду
-- Переключатель языка EN / RU
-- Работает на любом устройстве в вашей Wi-Fi сети
-
-### Что нужно
-
-- Python 3.8+
-- Node.js 18+
-
-### Запуск
-
-**1. Установка (один раз)**
-
-```
-python setup.py
+```bash
+npm ci
+npm run dev
 ```
 
-**2. Запуск сервера**
+Откройте локальный или сетевой адрес из терминала Vite. Для свежего прогноза и поиска городов требуется интернет, API ключи не нужны. По умолчанию выбран Берлин; доступны геолокация браузера и ручной поиск.
 
+Для необязательных скриптов нужен Python 3.8+. Выполните `python setup.py`, затем `python start.py` из этой папки. При необходимости используйте `python3`.
+
+```bash
+npm test             # Регрессионные тесты
+npm run test:watch   # Тесты в режиме наблюдения
+npm run build        # Сборка в dist/
+npm run preview      # Локальный просмотр сборки
 ```
-python start.py
-```
-
-В терминале появится:
-
-```
-  ╔══════════════════════════════════════════╗
-  ║      UrWeather is running!               ║
-  ╚══════════════════════════════════════════╝
-
-  This device:
-    http://localhost:5173
-
-  Phone / tablet / TV:
-    http://192.168.1.42:5173
-```
-
-### API ключи не нужны
-
-- **[Open-Meteo](https://open-meteo.com)** — погодные данные (бесплатно, без регистрации)
-- **[OpenStreetMap Nominatim](https://nominatim.org)** — поиск городов (бесплатно, без регистрации)
-
-### Проблемы
-
-**Node.js не найден** — скачайте LTS версию с [nodejs.org](https://nodejs.org) и перезапустите терминал.
-
-**Не открывается с телефона** — оба устройства должны быть в одной Wi-Fi сети. На Windows разрешите Node.js в брандмауэре при запросе.
-
-**Порт 5173 занят** — Vite автоматически возьмёт следующий свободный порт.

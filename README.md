@@ -1,269 +1,121 @@
 # 🌦️ UrWeather
 
-<div align="center">
+A local weather dashboard built with React, TypeScript, Vite, Tailwind CSS and Framer Motion.
 
-<img src="https://capsule-render.vercel.app/api?type=blur&height=220&color=0:0f172a,100:1e293b&text=UrWeather&fontSize=70&fontColor=ffffff&animation=fadeIn&fontAlignY=45&desc=Local%20Weather%20Dashboard&descAlignY=65&descSize=18" />
+[English](#english) · [Русский](#русский)
 
-<br>
+## English
 
-![GitHub stars](https://img.shields.io/github/stars/snowtravit/UrWeather?style=for-the-badge&logo=github&color=7dd3fc&labelColor=111827)
+### Features
 
-<br>
+- Current conditions, hourly charts and a seven-day forecast
+- Select a day to see its hourly breakdown
+- Animated backgrounds matching the weather
+- City search and EN / RU language switching
+- Ten-minute weather cache
+- Error messages and retry controls, with city search available while loading
+- Responsive layout for phones, tablets and computers on your local network
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-111827?style=for-the-badge&logo=typescript&logoColor=3178C6)
-![Vite](https://img.shields.io/badge/Vite-111827?style=for-the-badge&logo=vite&logoColor=646CFF)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-111827?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8)
-![Python](https://img.shields.io/badge/Python-111827?style=for-the-badge&logo=python&logoColor=F7DF1E)
+Weather data comes from [Open-Meteo](https://open-meteo.com), and city search uses [OpenStreetMap Nominatim](https://nominatim.org). No API keys or accounts are required. Internet access is needed to fetch fresh weather and search results.
 
-### ⚡ Local Weather Dashboard • No API Keys • Works Everywhere
+### Requirements
 
-</div>
+- Node.js 22.12+ recommended; Node.js 20.19+ on the Node 20 release line also works
+- npm, included with Node.js
+- Python 3.8+ only if you use the optional helper scripts
 
----
+### Getting started
 
-<div align="center">
+The app and its `package.json` are in the nested `UrWeather/` directory:
 
-🇺🇸 [English](#-english) • 🇷🇺 [Русский](#-русский)
+```bash
+git clone https://github.com/snowtravit/UrWeather.git
+cd UrWeather/UrWeather
+npm ci
+npm run dev
+```
 
-</div>
+Open the URL Vite prints, usually `http://localhost:5173`. To access the app from another device, use the printed network URL and connect both devices to the same network. Allow Node.js through your local firewall if needed. Vite tries the next free port when 5173 is busy.
 
----
+Berlin loads by default. If the browser grants location access, the app tries to use your location. Browser geolocation usually requires HTTPS or localhost, so city search is also available on ordinary local-network HTTP addresses.
 
-# 🇺🇸 English
+### Optional Python helpers
 
-🌍 A modern weather dashboard that runs on your local machine and works on any device in your Wi-Fi network — phone, tablet, laptop, Smart TV.
-
-✨ No API keys.  
-✨ No accounts.  
-✨ No complicated setup.
-
----
-
-## 🚀 Features
-
-- 🌡️ Current weather conditions
-- 📊 24-hour forecast chart
-- 📅 7-day forecast
-- 🕒 Hourly breakdown for each selected day
-- 🌧️ Animated weather backgrounds:
-  - Rain
-  - Snow
-  - Sun
-  - Fog
-  - Storm
-- 🌐 EN / RU language switch
-- 📱 Fully responsive UI
-- 📺 Smart TV support
-- 🏠 Works completely inside your local network
-
----
-
-## 🛠️ Tech Stack
-
-- ⚛️ React
-- 🟦 TypeScript
-- ⚡ Vite
-- 🎨 Tailwind CSS
-- 🎞️ Framer Motion
-- 📡 Open-Meteo API
-- 🗺️ OpenStreetMap Nominatim
-
----
-
-## 📦 Requirements
-
-- 🐍 Python 3.8+
-- 🟢 Node.js 18+
-
----
-
-## ▶️ Getting Started
-
-### 1️⃣ Install dependencies
+From the same nested `UrWeather/` directory:
 
 ```bash
 python setup.py
-```
-
-### 2️⃣ Start the server
-
-```bash
 python start.py
 ```
 
----
+Use `python3` if that is your Python 3 command. Setup installs dependencies and creates a local setup marker; start launches Vite and prints local and network URLs.
 
-## 💻 Terminal Output
+### Checks and production build
 
-```text
-╔══════════════════════════════════════════╗
-║          UrWeather is running!           ║
-╚══════════════════════════════════════════╝
+Run these commands from the app directory:
 
-This device:
-  http://localhost:5173
-
-Phone / Tablet / TV:
-  http://192.168.1.42:5173
+```bash
+npm test
+npm run build
+npm run preview
 ```
 
----
+`npm test` checks request failures, retries and overlapping requests. `npm run build` writes the production bundle to `dist/`; `npm run preview` serves that build for local inspection. Use `npm run test:watch` during development. GitHub Actions runs the tests and build on pushes and pull requests.
 
-## 🔑 No API Keys Needed
+## Русский
 
-- 🌦️ **Open-Meteo** — free weather data
-- 🗺️ **OpenStreetMap Nominatim** — free city search
+### Возможности
 
-No registration required.
+- Текущая погода, почасовые графики и прогноз на семь дней
+- Почасовая разбивка выбранного дня
+- Анимированный фон под текущую погоду
+- Поиск города и переключение EN / RU
+- Кэш погоды на десять минут
+- Сообщения об ошибках и повтор запроса; поиск доступен во время загрузки
+- Адаптивный интерфейс для телефона, планшета и компьютера в локальной сети
 
----
+Погода загружается из [Open-Meteo](https://open-meteo.com), поиск городов использует [OpenStreetMap Nominatim](https://nominatim.org). API ключи и регистрация не нужны. Для свежего прогноза и поиска требуется интернет.
 
-## 🧩 Troubleshooting
+### Требования
 
-### ❌ Node.js not found
+- Рекомендуется Node.js 22.12+; также подходит Node.js 20.19+ из ветки Node 20
+- npm, который входит в Node.js
+- Python 3.8+ только для необязательных скриптов запуска
 
-Download the latest LTS version from:
+### Запуск
 
-👉 https://nodejs.org
+Приложение и его `package.json` находятся во вложенной папке `UrWeather/`:
 
-Then restart your terminal.
+```bash
+git clone https://github.com/snowtravit/UrWeather.git
+cd UrWeather/UrWeather
+npm ci
+npm run dev
+```
 
----
+Откройте адрес, который напечатает Vite, обычно `http://localhost:5173`. Для другого устройства используйте сетевой адрес из терминала и подключите оба устройства к одной сети. При необходимости разрешите Node.js в брандмауэре. Если порт 5173 занят, Vite выберет следующий свободный.
 
-### 📱 Can't open from phone
+По умолчанию загружается Берлин. Если браузер разрешит доступ к местоположению, приложение попробует загрузить местную погоду. Геолокация обычно доступна только через HTTPS или localhost, поэтому при доступе по обычному HTTP в локальной сети можно выбрать город через поиск.
 
-Make sure both devices are connected to the same Wi-Fi network.
+### Необязательные Python скрипты
 
-On Windows, allow Node.js through the firewall when prompted.
-
----
-
-### ⚠️ Port 5173 is busy
-
-Vite will automatically use the next available port.
-
----
-
-# 🇷🇺 Русский
-
-🌍 Современный погодный дашборд, который запускается локально и работает на любом устройстве в вашей Wi-Fi сети — телефон, планшет, ноутбук, Smart TV.
-
-✨ Без API ключей.  
-✨ Без регистрации.  
-✨ Без сложной настройки.
-
----
-
-## 🚀 Возможности
-
-- 🌡️ Текущая погода
-- 📊 Почасовой прогноз на 24 часа
-- 📅 Прогноз на 7 дней
-- 🕒 Почасовая разбивка выбранного дня
-- 🌧️ Анимированный погодный фон:
-  - Дождь
-  - Снег
-  - Солнце
-  - Туман
-  - Гроза
-- 🌐 Переключение языка EN / RU
-- 📱 Адаптивный интерфейс
-- 📺 Поддержка Smart TV
-- 🏠 Работа внутри локальной сети
-
----
-
-## 🛠️ Стек технологий
-
-- ⚛️ React
-- 🟦 TypeScript
-- ⚡ Vite
-- 🎨 Tailwind CSS
-- 🎞️ Framer Motion
-- 📡 Open-Meteo API
-- 🗺️ OpenStreetMap Nominatim
-
----
-
-## 📦 Требования
-
-- 🐍 Python 3.8+
-- 🟢 Node.js 18+
-
----
-
-## ▶️ Запуск
-
-### 1️⃣ Установка зависимостей
+В той же вложенной папке `UrWeather/`:
 
 ```bash
 python setup.py
-```
-
-### 2️⃣ Запуск сервера
-
-```bash
 python start.py
 ```
 
----
+Если Python 3 запускается командой `python3`, используйте её. Setup устанавливает зависимости и создаёт локальный маркер настройки; start запускает Vite и выводит адреса для компьютера и других устройств.
 
-## 💻 Вывод в терминале
+### Проверки и сборка
 
-```text
-╔══════════════════════════════════════════╗
-║          UrWeather is running!           ║
-╚══════════════════════════════════════════╝
+Запускайте команды из папки приложения:
 
-This device:
-  http://localhost:5173
-
-Phone / Tablet / TV:
-  http://192.168.1.42:5173
+```bash
+npm test
+npm run build
+npm run preview
 ```
 
----
-
-## 🔑 API ключи не нужны
-
-- 🌦️ **Open-Meteo** — бесплатные погодные данные
-- 🗺️ **OpenStreetMap Nominatim** — бесплатный поиск городов
-
-Регистрация не требуется.
-
----
-
-## 🧩 Решение проблем
-
-### ❌ Node.js не найден
-
-Скачайте LTS версию:
-
-👉 https://nodejs.org
-
-После установки перезапустите терминал.
-
----
-
-### 📱 Не открывается с телефона
-
-Убедитесь, что оба устройства подключены к одной Wi-Fi сети.
-
-На Windows разрешите Node.js в брандмауэре.
-
----
-
-### ⚠️ Порт 5173 занят
-
-Vite автоматически выберет следующий свободный порт.
-
----
-
-<div align="center">
-
-### ⭐ If you like this project — give it a star
-
-Made with ❤️ using React + Vite
-
-</div>
+`npm test` проверяет ошибки запросов, повторную загрузку и одновременные запросы. `npm run build` сохраняет сборку в `dist/`; `npm run preview` запускает локальный просмотр сборки. Для разработки есть `npm run test:watch`. GitHub Actions выполняет тесты и сборку при push и pull request.
