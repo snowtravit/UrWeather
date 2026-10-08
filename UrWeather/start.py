@@ -90,12 +90,25 @@ def main():
                     env_vars.setdefault(key.strip(), val.strip())
         ok(".env loaded")
 
-    port = int(env_vars.get("PORT", "5173"))
+    try:
+        port = int(env_vars.get("PORT", "5173"))
+    except ValueError:
+        err("PORT must be a number between 1 and 65535.")
+        sys.exit(1)
+    if not 1 <= port <= 65535:
+        err("PORT must be a number between 1 and 65535.")
+        sys.exit(1)
     local_ip = get_local_ip()
     npm_cmd = find_package_manager(project_dir)
     ok(f"Package manager: {npm_cmd}")
 
-    vite_cmd = f"npx vite --config vite.config.local.ts --host 0.0.0.0 --port {port}"
+    if npm_cmd == "pnpm":
+        vite_command = ["pnpm", "exec", "vite"]
+    else:
+        vite_command = ["npx", "vite"]
+    vite_command.extend(["--config", "vite.config.local.ts", "--host", "0.0.0.0", "--port", str(port)])
+
+    vite_cmd = " ".join(vite_command)
 
     print()
     print(f"  {C.DIM}{'─' * 44}{C.RESET}")
@@ -119,8 +132,7 @@ def main():
 
     try:
         process = subprocess.Popen(
-            vite_cmd,
-            shell=True,
+            vite_command,
             cwd=project_dir,
             env=env_vars,
             stdout=subprocess.PIPE,
