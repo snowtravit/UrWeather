@@ -14,12 +14,21 @@ const LanguageContext = createContext<LanguageContextValue>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const stored = (localStorage.getItem('sw-lang') as Lang) || 'en';
-  const [lang, setLangState] = useState<Lang>(stored);
+  const [lang, setLangState] = useState<Lang>(() => {
+    try {
+      return localStorage.getItem('sw-lang') === 'ru' ? 'ru' : 'en';
+    } catch {
+      return 'en';
+    }
+  });
 
   const setLang = (l: Lang) => {
     setLangState(l);
-    localStorage.setItem('sw-lang', l);
+    try {
+      localStorage.setItem('sw-lang', l);
+    } catch {
+      // Language selection still works when browser storage is unavailable.
+    }
   };
 
   return (

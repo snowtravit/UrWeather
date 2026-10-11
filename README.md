@@ -48,7 +48,7 @@ python setup.py
 python start.py
 ```
 
-Use `python3` if that is your Python 3 command. Setup installs dependencies and creates a local setup marker; start launches Vite and prints local and network URLs.
+Use `python3` if that is your Python 3 command. Setup refreshes dependencies using `npm ci` and creates a local setup marker; start launches the installed Vite through Node.js and prints local and network URLs.
 
 ### Checks and production build
 
@@ -56,11 +56,14 @@ Run these commands from the app directory:
 
 ```bash
 npm test
+npm run typecheck
+npm audit
+python3 -m unittest test_launcher.py
 npm run build
 npm run preview
 ```
 
-`npm test` checks request failures, retries and overlapping requests. `npm run build` writes the production bundle to `dist/`; `npm run preview` serves that build for local inspection. Use `npm run test:watch` during development. GitHub Actions runs the tests and build on pushes and pull requests.
+`npm test` checks request failures, timeouts, retries, overlapping searches, cache validation, language storage and forecast dates. `npm audit` checks all dependencies, including development tools. The Python tests check launcher errors and paths containing spaces. `npm run build` writes the production bundle to `dist/`; `npm run preview` serves that build for local inspection. Use `npm run test:watch` during development. GitHub Actions runs these checks on pushes and pull requests.
 
 ## Русский
 
@@ -106,7 +109,7 @@ python setup.py
 python start.py
 ```
 
-Если Python 3 запускается командой `python3`, используйте её. Setup устанавливает зависимости и создаёт локальный маркер настройки; start запускает Vite и выводит адреса для компьютера и других устройств.
+Если Python 3 запускается командой `python3`, используйте её. Setup обновляет зависимости через `npm ci` и создаёт локальный маркер настройки; start запускает установленный Vite через Node.js и выводит адреса для компьютера и других устройств.
 
 ### Проверки и сборка
 
@@ -114,8 +117,11 @@ python start.py
 
 ```bash
 npm test
+npm run typecheck
+npm audit
+python3 -m unittest test_launcher.py
 npm run build
 npm run preview
 ```
 
-`npm test` проверяет ошибки запросов, повторную загрузку и одновременные запросы. `npm run build` сохраняет сборку в `dist/`; `npm run preview` запускает локальный просмотр сборки. Для разработки есть `npm run test:watch`. GitHub Actions выполняет тесты и сборку при push и pull request.
+`npm test` проверяет ошибки и таймауты запросов, повторную загрузку, одновременный поиск, данные кэша, сохранение языка и даты прогноза. `npm audit` проверяет все зависимости, включая инструменты разработки. Тесты Python проверяют ошибки запуска и пути с пробелами. `npm run build` сохраняет сборку в `dist/`; `npm run preview` запускает локальный просмотр сборки. Для разработки есть `npm run test:watch`. GitHub Actions выполняет эти проверки при push и pull request.

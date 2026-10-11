@@ -1,4 +1,4 @@
-import { WeatherData } from "../api/openMeteo";
+import { WeatherData, isWeatherData } from "../api/openMeteo";
 
 export const CACHE_TTL_MS = 10 * 60 * 1000;
 
@@ -20,10 +20,12 @@ export function getCachedWeather(key: string): WeatherData | null {
     const localStr = localStorage.getItem(`weather_cache_${key}`);
     if (localStr) {
       const entry: CacheEntry = JSON.parse(localStr);
-      if (now - entry.timestamp < CACHE_TTL_MS) {
+      if (entry && Number.isFinite(entry.timestamp) && entry.timestamp <= now
+          && now - entry.timestamp < CACHE_TTL_MS && isWeatherData(entry.data)) {
         memoryCache.set(key, entry);
         return entry.data;
       }
+      localStorage.removeItem(`weather_cache_${key}`);
     }
   } catch {
     // ignore

@@ -19,6 +19,30 @@ afterEach(() => {
 });
 
 describe('city search requests', () => {
+  it('removes old results immediately while a new query is being debounced', async () => {
+    vi.mocked(searchCity).mockResolvedValueOnce([{ name: 'Paris', lat: 48.85, lon: 2.35, country: 'France' }]);
+    render(<LanguageProvider><Header cityName="" onLocationSelect={vi.fn()} /></LanguageProvider>);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Paris' } });
+    await act(async () => { vi.advanceTimersByTime(500); });
+    expect(screen.getByRole('button', { name: 'Paris France' })).toBeTruthy();
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Berlin' } });
+    expect(screen.queryByRole('button', { name: 'Paris France' })).toBeNull();
+  });
+
+  it('reports a failed search and clears the error for a new query', async () => {
+    vi.mocked(searchCity).mockRejectedValueOnce(new Error('Offline')).mockResolvedValueOnce([]);
+    render(<LanguageProvider><Header cityName="" onLocationSelect={vi.fn()} /></LanguageProvider>);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Paris' } });
+    await act(async () => { vi.advanceTimersByTime(500); });
+    expect(screen.getByRole('alert').textContent).toContain('City search failed');
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Berlin' } });
+    expect(screen.queryByRole('alert')).toBeNull();
+    await act(async () => { vi.advanceTimersByTime(500); });
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('ignores an older search response after the query changes', async () => {
     const paris = deferred<Awaited<ReturnType<typeof searchCity>>>();
     vi.mocked(searchCity)

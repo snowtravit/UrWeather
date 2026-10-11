@@ -6,6 +6,7 @@ import socket
 import subprocess
 import shutil
 import datetime
+import re
 
 class C:
     RESET  = "\033[0m"
@@ -47,7 +48,7 @@ def run(cmd):
 def run_npm_install(npm_cmd, project_dir):
     try:
         proc = subprocess.Popen(
-            f"{npm_cmd} install",
+            f"{npm_cmd} ci" if npm_cmd == "npm" and os.path.isfile(os.path.join(project_dir, "package-lock.json")) else f"{npm_cmd} install",
             shell=True,
             cwd=project_dir,
             stdout=subprocess.PIPE,
@@ -88,15 +89,22 @@ def main():
         info("Download from: https://nodejs.org  (LTS recommended)")
         sys.exit(1)
     ok(f"Node.js {node_ver}")
+    version = re.match(r"v?(\d+)\.(\d+)\.(\d+)", node_ver)
+    if not version or not (
+        (int(version[1]) == 20 and (int(version[2]), int(version[3])) >= (19, 0))
+        or (int(version[1]), int(version[2]), int(version[3])) >= (22, 12, 0)
+    ):
+        err("Node.js 20.19+ (Node 20) or 22.12+ required.")
+        sys.exit(1)
 
     pnpm_ok, pnpm_ver, _ = run("pnpm --version")
     npm_ok, npm_ver, _   = run("npm --version")
-    if pnpm_ok:
-        npm_cmd = "pnpm"
-        ok(f"pnpm {pnpm_ver}")
-    elif npm_ok:
+    if npm_ok:
         npm_cmd = "npm"
         ok(f"npm {npm_ver}")
+    elif pnpm_ok:
+        npm_cmd = "pnpm"
+        ok(f"pnpm {pnpm_ver}")
     else:
         err("Neither npm nor pnpm found.")
         sys.exit(1)
@@ -141,17 +149,13 @@ def main():
         ok(".gitignore created")
 
     step("5 / 6  Dependencies")
-    node_modules = os.path.join(project_dir, "node_modules")
-    if os.path.isdir(node_modules):
-        ok("node_modules already exists, skipping install")
-    else:
-        info(f"Running: {npm_cmd} install  (may take 1–3 minutes…)")
-        hr()
-        if not run_npm_install(npm_cmd, project_dir):
-            err(f"{npm_cmd} install failed. Check your internet connection.")
-            sys.exit(1)
-        hr()
-        ok("Dependencies installed")
+    info("Installing dependencies from the project lockfile…")
+    hr()
+    if not run_npm_install(npm_cmd, project_dir):
+        err(f"{npm_cmd} dependency installation failed. Check your internet connection.")
+        sys.exit(1)
+    hr()
+    ok("Dependencies installed")
 
     step("6 / 6  Network")
     local_ip = get_local_ip()

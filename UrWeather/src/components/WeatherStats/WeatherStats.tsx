@@ -12,9 +12,12 @@ export function WeatherStats({ current, daily }: WeatherStatsProps) {
   const { t } = useLang();
   const sunrise = new Date(daily.sunrise[0]);
   const sunset = new Date(daily.sunset[0]);
+  const hasSunCycle = daily.sunrise[0] !== daily.sunset[0];
 
   const uvRisk =
-    current.uv_index < 3
+    current.uv_index === null
+      ? t.dataUnavailable
+      : current.uv_index < 3
       ? t.uvRisk.low
       : current.uv_index < 6
       ? t.uvRisk.moderate
@@ -23,7 +26,9 @@ export function WeatherStats({ current, daily }: WeatherStatsProps) {
       : t.uvRisk.veryHigh;
 
   const uvColor =
-    current.uv_index < 3
+    current.uv_index === null
+      ? 'bg-white/20'
+      : current.uv_index < 3
       ? 'bg-green-500'
       : current.uv_index < 6
       ? 'bg-yellow-500'
@@ -46,13 +51,13 @@ export function WeatherStats({ current, daily }: WeatherStatsProps) {
         <div className="flex justify-between items-end">
           <div>
             <div className="text-xl font-medium text-white">
-              {sunrise.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })}
+              {hasSunCycle ? sunrise.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' }) : '—'}
             </div>
             <div className="text-xs text-white/40 mt-1">{t.sunrise}</div>
           </div>
           <div className="text-right">
             <div className="text-xl font-medium text-white">
-              {sunset.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })}
+              {hasSunCycle ? sunset.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' }) : '—'}
             </div>
             <div className="text-xs text-white/40 mt-1">{t.sunset}</div>
           </div>
@@ -118,11 +123,11 @@ export function WeatherStats({ current, daily }: WeatherStatsProps) {
           <Sun className="w-4 h-4 mr-2" />
           <span className="text-xs font-medium uppercase tracking-wider">{t.uvIndex}</span>
         </div>
-        <div className="text-2xl font-bold text-white mb-2">{current.uv_index.toFixed(1)}</div>
+        <div className="text-2xl font-bold text-white mb-2">{current.uv_index === null ? '—' : current.uv_index.toFixed(1)}</div>
         <div className="w-full bg-black/20 h-1.5 rounded-full overflow-hidden">
           <div
             className={`h-full ${uvColor}`}
-            style={{ width: `${Math.min((current.uv_index / 11) * 100, 100)}%` }}
+            style={{ width: `${current.uv_index === null ? 0 : Math.min((current.uv_index / 11) * 100, 100)}%` }}
           />
         </div>
         <div className="text-xs text-white/50 mt-2">{uvRisk}</div>

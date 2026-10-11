@@ -2,6 +2,7 @@ import { DailyForecast as DailyData, getWeatherDescription } from '../../api/ope
 import { Sun, Cloud, CloudSun, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning, Droplets, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/i18n/LanguageContext';
+import { forecastDate } from '@/lib/forecast';
 
 const iconMap: Record<string, React.ElementType> = {
   Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning,
@@ -16,8 +17,8 @@ interface DailyForecastProps {
 export function DailyForecast({ daily, selectedDayIndex, onSelectDay }: DailyForecastProps) {
   const { t } = useLang();
 
-  const days = Array.from({ length: 7 }).map((_, i) => ({
-    date: new Date(daily.time[i]),
+  const days = daily.time.map((date, i) => ({
+    date: forecastDate(date),
     min: daily.temperature_2m_min[i],
     max: daily.temperature_2m_max[i],
     code: daily.weathercode[i],

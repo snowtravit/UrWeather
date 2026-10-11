@@ -19,6 +19,9 @@ For the optional helpers, install Python 3.8+ and run `python setup.py`, then `p
 
 ```bash
 npm test             # Regression tests
+npm run typecheck    # TypeScript checks
+npm audit            # Check every dependency
+python3 -m unittest test_launcher.py
 npm run test:watch   # Watch tests during development
 npm run build        # Production build in dist/
 npm run preview      # Serve the production build locally
@@ -41,6 +44,9 @@ npm run dev
 
 ```bash
 npm test             # Регрессионные тесты
+npm run typecheck    # Проверки TypeScript
+npm audit            # Проверка всех зависимостей
+python3 -m unittest test_launcher.py
 npm run test:watch   # Тесты в режиме наблюдения
 npm run build        # Сборка в dist/
 npm run preview      # Локальный просмотр сборки

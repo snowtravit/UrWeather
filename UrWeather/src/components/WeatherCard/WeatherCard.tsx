@@ -69,7 +69,7 @@ export function WeatherCard({ current, cityName }: WeatherCardProps) {
           </div>
           <div>
             <div className="text-white/50 text-xs uppercase tracking-wider">{t.visibility}</div>
-            <div className="text-white font-medium">{(current.visibility / 1000).toFixed(1)} {t.km}</div>
+            <div className="text-white font-medium">{current.visibility === null ? '—' : `${(current.visibility / 1000).toFixed(1)} ${t.km}`}</div>
           </div>
         </div>
         <div className="flex items-center space-x-3">
@@ -78,7 +78,7 @@ export function WeatherCard({ current, cityName }: WeatherCardProps) {
           </div>
           <div>
             <div className="text-white/50 text-xs uppercase tracking-wider">{t.uvIndex}</div>
-            <div className="text-white font-medium">{current.uv_index.toFixed(1)}</div>
+            <div className="text-white font-medium">{current.uv_index === null ? '—' : current.uv_index.toFixed(1)}</div>
           </div>
         </div>
       </div>

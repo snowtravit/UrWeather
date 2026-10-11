@@ -1,3 +1,5 @@
+import { requestJson } from './request';
+
 export interface CurrentWeather {
   temperature_2m: number;
   weathercode: number;
@@ -6,8 +8,8 @@ export interface CurrentWeather {
   apparent_temperature: number;
   precipitation: number;
   relative_humidity_2m: number;
-  visibility: number;
-  uv_index: number;
+  visibility: number | null;
+  uv_index: number | null;
   is_day: number;
   time: string;
 }
@@ -40,49 +42,35 @@ export interface WeatherData {
   longitude: number;
 }
 
+export function isWeatherData(value: unknown): value is WeatherData {
+  if (!value || typeof value !== 'object') return false;
+  const data = value as WeatherData;
+  if (!data.current || typeof data.current.time !== 'string') return false;
+  const currentFields = ['temperature_2m', 'weathercode', 'windspeed_10m', 'winddirection_10m',
+    'apparent_temperature', 'precipitation', 'relative_humidity_2m', 'is_day'] as const;
+  if (!currentFields.every(field => Number.isFinite(data.current[field]))) return false;
+  if (!(['visibility', 'uv_index'] as const).every(field => data.current[field] === null || Number.isFinite(data.current[field]))) return false;
+  if (!data.hourly || !data.daily) return false;
+  const numericSeries = (series: unknown, length: number) =>
+    Array.isArray(series) && series.length === length && series.every(Number.isFinite);
+  const stringSeries = (series: unknown) =>
+    Array.isArray(series) && series.length > 0 && series.every(value => typeof value === 'string');
+  if (!stringSeries(data.hourly.time) || !stringSeries(data.daily.time)) return false;
+  const hourlyFields = ['temperature_2m', 'weathercode', 'precipitation_probability', 'precipitation', 'windspeed_10m'] as const;
+  const dailyFields = ['weathercode', 'temperature_2m_max', 'temperature_2m_min',
+    'precipitation_probability_max', 'windspeed_10m_max'] as const;
+  return Number.isFinite(data.latitude) && Number.isFinite(data.longitude)
+    && hourlyFields.every(field => numericSeries(data.hourly[field], data.hourly.time.length))
+    && dailyFields.every(field => numericSeries(data.daily[field], data.daily.time.length))
+    && stringSeries(data.daily.sunrise) && data.daily.sunrise.length === data.daily.time.length
+    && stringSeries(data.daily.sunset) && data.daily.sunset.length === data.daily.time.length;
+}
+
 export async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m,winddirection_10m,apparent_temperature,precipitation,relative_humidity_2m,visibility,uv_index,is_day&hourly=temperature_2m,weathercode,precipitation_probability,precipitation,windspeed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,sunrise,sunset&timezone=auto&forecast_days=7`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error('Failed to fetch weather data');
-  }
-  const data = await res.json();
-
-  return {
-    current: {
-      temperature_2m: data.current.temperature_2m,
-      weathercode: data.current.weathercode,
-      windspeed_10m: data.current.windspeed_10m,
-      winddirection_10m: data.current.winddirection_10m,
-      apparent_temperature: data.current.apparent_temperature,
-      precipitation: data.current.precipitation,
-      relative_humidity_2m: data.current.relative_humidity_2m,
-      visibility: data.current.visibility,
-      uv_index: data.current.uv_index,
-      is_day: data.current.is_day,
-      time: data.current.time,
-    },
-    hourly: {
-      time: data.hourly.time,
-      temperature_2m: data.hourly.temperature_2m,
-      weathercode: data.hourly.weathercode,
-      precipitation_probability: data.hourly.precipitation_probability,
-      precipitation: data.hourly.precipitation,
-      windspeed_10m: data.hourly.windspeed_10m,
-    },
-    daily: {
-      time: data.daily.time,
-      weathercode: data.daily.weathercode,
-      temperature_2m_max: data.daily.temperature_2m_max,
-      temperature_2m_min: data.daily.temperature_2m_min,
-      precipitation_probability_max: data.daily.precipitation_probability_max,
-      windspeed_10m_max: data.daily.windspeed_10m_max,
-      sunrise: data.daily.sunrise,
-      sunset: data.daily.sunset,
-    },
-    latitude: data.latitude,
-    longitude: data.longitude,
-  };
+  const data = await requestJson(url);
+  if (!isWeatherData(data)) throw new Error('Weather service returned an invalid forecast');
+  return data;
 }
 
 export function getWeatherDescription(code: number): { label: string, icon: string } {

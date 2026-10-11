@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/i18n/LanguageContext';
+import { forecastDate, getHourlyForecast } from '@/lib/forecast';
 
 const iconMap: Record<string, React.ElementType> = {
   Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudSnow, CloudLightning,
@@ -15,9 +16,11 @@ interface HourlyForecastProps {
   hourly: HourlyData;
   selectedDayIndex: number;
   dailyDates: string[];
+  currentTime: string;
 }
 
 function ChartTooltip({ active, payload }: TooltipProps<number, string>) {
+  const { t } = useLang();
   if (!active || !payload?.length) return null;
   const d = payload[0].payload as { time: Date; temp: number; precip: number; code: number };
   const { icon } = getWeatherDescription(d.code);
@@ -25,7 +28,7 @@ function ChartTooltip({ active, payload }: TooltipProps<number, string>) {
   return (
     <div className="glass-card px-3 py-2 flex flex-col items-center gap-1 min-w-[70px] border border-white/10">
       <span className="text-white/60 text-xs">
-        {d.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {d.time.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })}
       </span>
       <Icon className="w-4 h-4 text-primary/80" />
       <span className="text-white font-semibold text-sm">{Math.round(d.temp)}°</span>
@@ -39,38 +42,21 @@ function ChartTooltip({ active, payload }: TooltipProps<number, string>) {
   );
 }
 
-export function HourlyForecast({ hourly, selectedDayIndex, dailyDates }: HourlyForecastProps) {
+export function HourlyForecast({ hourly, selectedDayIndex, dailyDates, currentTime }: HourlyForecastProps) {
   const { t } = useLang();
 
   const selectedDateStr = dailyDates[selectedDayIndex];
   const isToday = selectedDayIndex === 0;
 
-  let startIndex = 0;
-  if (isToday) {
-    const nowIdx = hourly.time.findIndex(ts => new Date(ts).getTime() > Date.now());
-    startIndex = Math.max(0, nowIdx - 1);
-  } else {
-    const found = hourly.time.findIndex(ts => ts.startsWith(selectedDateStr));
-    startIndex = found >= 0 ? found : selectedDayIndex * 24;
-  }
-
-  const data = Array.from({ length: 24 }).map((_, i) => {
-    const idx = Math.min(startIndex + i, hourly.time.length - 1);
-    return {
-      time: new Date(hourly.time[idx]),
-      temp: hourly.temperature_2m[idx],
-      code: hourly.weathercode[idx],
-      precip: hourly.precipitation_probability[idx],
-    };
-  });
+  const data = getHourlyForecast(hourly, currentTime, selectedDateStr, isToday);
 
   // Icons shown every 3 hours → 8 icons for 24h (indices 0,3,6,9,12,15,18,21)
-  const iconStrip = [0, 3, 6, 9, 12, 15, 18, 21].map((i) => ({
+  const iconStrip = [0, 3, 6, 9, 12, 15, 18, 21].filter(i => i < data.length).map((i) => ({
     time: data[i].time,
     code: data[i].code,
   }));
 
-  const selectedDate = new Date(selectedDateStr);
+  const selectedDate = forecastDate(selectedDateStr);
   const titleLabel = isToday
     ? t.hourlyTitle
     : `${t.hourlyFor} ${selectedDate.toLocaleDateString(t.locale, { weekday: 'long', day: 'numeric', month: 'short' })}`;
@@ -107,7 +93,7 @@ export function HourlyForecast({ hourly, selectedDayIndex, dailyDates }: HourlyF
               <div key={i} className="flex flex-col items-center gap-0.5">
                 <Icon className="w-4 h-4 text-white/50" />
                 <span className="text-[9px] text-white/30 tabular-nums">
-                  {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {time.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             );
@@ -142,12 +128,13 @@ export function HourlyForecast({ hourly, selectedDayIndex, dailyDates }: HourlyF
               <XAxis
                 dataKey="time"
                 tickFormatter={(v: Date) =>
-                  v.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  v.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })
                 }
                 tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 9 }}
                 tickLine={false}
                 axisLine={false}
-                interval={2}
+                interval="preserveStartEnd"
+                minTickGap={12}
               />
               <YAxis domain={['dataMin - 2', 'dataMax + 2']} hide />
               <Tooltip

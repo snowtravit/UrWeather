@@ -52,6 +52,7 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
   const [results, setResults] = useState<Array<{ name: string; lat: number; lon: number; country: string }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchError, setSearchError] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,16 +68,24 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
   useEffect(() => {
     let cancelled = false;
     setIsSearching(false);
+    setResults([]);
+    setShowDropdown(false);
+    setSearchError(false);
     const timer = setTimeout(async () => {
-      if (query.length >= 2) {
+      if (query.trim().length >= 2) {
         setIsSearching(true);
         try {
-          const res = await searchCity(query, lang);
+          const res = await searchCity(query.trim(), lang);
           if (!cancelled) {
             setResults(res);
             setShowDropdown(true);
           }
-        } catch { /* ignore */ } finally {
+        } catch {
+          if (!cancelled) {
+            setSearchError(true);
+            setShowDropdown(true);
+          }
+        } finally {
           if (!cancelled) setIsSearching(false);
         }
       } else {
@@ -118,8 +127,9 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
           )}
         </div>
 
-        {showDropdown && results.length > 0 && (
+        {showDropdown && (results.length > 0 || searchError) && (
           <div className="absolute top-full left-0 right-0 mt-2 glass-card overflow-hidden shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+            {searchError && <p role="alert" className="px-4 py-3 text-sm text-white/80">{t.citySearchFailed}</p>}
             {results.map((r, i) => (
               <button
                 key={i}
@@ -134,7 +144,7 @@ export function Header({ cityName, onLocationSelect }: HeaderProps) {
                 <MapPin className="w-4 h-4 text-primary/70 shrink-0" />
                 <span>
                   <span className="font-medium text-white">{r.name}</span>
-                  <span className="text-white/50 text-sm ml-2">{r.country}</span>
+                  <span className="text-white/50 text-sm ml-2">{' '}{r.country}</span>
                 </span>
               </button>
             ))}

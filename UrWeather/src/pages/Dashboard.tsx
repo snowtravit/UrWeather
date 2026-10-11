@@ -73,6 +73,7 @@ export default function Dashboard() {
                   hourly={weather.hourly}
                   selectedDayIndex={selectedDayIndex}
                   dailyDates={weather.daily.time}
+                  currentTime={weather.current.time}
                 />
                 <WeatherStats current={weather.current} daily={weather.daily} />
               </div>

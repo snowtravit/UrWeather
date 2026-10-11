@@ -5,6 +5,7 @@ import socket
 import subprocess
 import signal
 import re
+import shutil
 
 class C:
     RESET  = "\033[0m"
@@ -29,21 +30,14 @@ def get_local_ip():
     except Exception:
         return "127.0.0.1"
 
-def find_package_manager(project_dir):
-    marker = os.path.join(project_dir, ".setup_complete")
-    if os.path.exists(marker):
-        with open(marker) as f:
-            for line in f:
-                if line.startswith("package_manager:"):
-                    return line.split(":", 1)[1].strip()
-    for cmd in ("pnpm", "npm"):
-        try:
-            r = subprocess.run(f"{cmd} --version", shell=True, capture_output=True)
-            if r.returncode == 0:
-                return cmd
-        except Exception:
-            pass
-    return "npm"
+def server_command(project_dir, port):
+    node = shutil.which("node")
+    if not node:
+        raise FileNotFoundError("Node.js not found. Install Node.js and add it to PATH.")
+    vite = os.path.join(project_dir, "node_modules", "vite", "bin", "vite.js")
+    if not os.path.isfile(vite):
+        raise FileNotFoundError("Vite is not installed. Run python setup.py first.")
+    return [node, vite, "--config", "vite.config.local.ts", "--host", "0.0.0.0", "--port", str(port)]
 
 def extract_port(line: str):
     m = re.search(r"localhost:(\d+)", line)
@@ -99,16 +93,13 @@ def main():
         err("PORT must be a number between 1 and 65535.")
         sys.exit(1)
     local_ip = get_local_ip()
-    npm_cmd = find_package_manager(project_dir)
-    ok(f"Package manager: {npm_cmd}")
+    try:
+        vite_command = server_command(project_dir, port)
+    except FileNotFoundError as e:
+        err(str(e))
+        return 1
 
-    if npm_cmd == "pnpm":
-        vite_command = ["pnpm", "exec", "vite"]
-    else:
-        vite_command = ["npx", "vite"]
-    vite_command.extend(["--config", "vite.config.local.ts", "--host", "0.0.0.0", "--port", str(port)])
-
-    vite_cmd = " ".join(vite_command)
+    vite_cmd = subprocess.list2cmdline(vite_command)
 
     print()
     print(f"  {C.DIM}{'─' * 44}{C.RESET}")
@@ -125,6 +116,11 @@ def main():
         print(f"  {C.YELLOW}Server stopped.{C.RESET}")
         if process:
             process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, handle_exit)
@@ -162,15 +158,12 @@ def main():
             elif line:
                 print(f"  {C.DIM}{line}{C.RESET}")
 
-        process.wait()
+        return process.wait()
 
-    except FileNotFoundError:
-        err("npx not found. Make sure Node.js is installed correctly.")
-        sys.exit(1)
     except Exception as e:
         err(f"Failed to start: {e}")
-        sys.exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

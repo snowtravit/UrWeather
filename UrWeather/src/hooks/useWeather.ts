@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchWeather, WeatherData, SceneType, getWeatherScene } from '../api/openMeteo';
 import { getCachedWeather, setCachedWeather } from '../store/cache';
+import { reverseCity } from '../api/geolocation';
 
 export function useRealTimeClock() {
   const [time, setTime] = useState(new Date());
@@ -68,8 +69,6 @@ export function useWeather(lang = 'en') {
   useEffect(() => {
     let cancelled = false;
     let geoTimer: ReturnType<typeof setTimeout> | undefined;
-    const currentLang = langRef.current;
-    const acceptLang = currentLang === 'ru' ? 'ru,en' : 'en';
 
     // Load Berlin immediately
     loadWeatherForLocation(BERLIN.lat, BERLIN.lon, BERLIN.city);
@@ -95,13 +94,7 @@ export function useWeather(lang = 'en') {
           if (cancelled || requestIdRef.current !== initialRequestId) return;
           let city = 'My Location';
           try {
-            const r = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${loc.lat}&lon=${loc.lon}&format=json&accept-language=${acceptLang}`
-            );
-            if (r.ok) {
-              const d = await r.json();
-              city = d.address?.city || d.address?.town || d.address?.village || 'My Location';
-            }
+            city = await reverseCity(loc.lat, loc.lon, langRef.current);
           } catch { /* ignore */ }
           if (!cancelled && requestIdRef.current === initialRequestId) {
             loadWeatherForLocation(loc.lat, loc.lon, city);
