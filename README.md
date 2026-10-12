@@ -56,7 +56,7 @@ Open `http://localhost:8080`. Use `python` if that is your Python 3 command. No 
 - Error messages and retry controls, with city search available while loading
 - Responsive layout for phones, tablets and computers on your local network
 
-Weather data comes from [Open-Meteo](https://open-meteo.com), and city search uses [OpenStreetMap Nominatim](https://nominatim.org). No API keys or accounts are required. Internet access is needed to fetch fresh weather and search results.
+Weather data and city search use [Open-Meteo](https://open-meteo.com) and [GeoNames](https://www.geonames.org); location lookup also uses [OpenStreetMap Nominatim](https://nominatim.org). No API keys or accounts are required. Internet access is needed to fetch fresh weather and search results. Data providers are credited in the app footer.
 
 ### 🧰 Requirements
 
@@ -117,7 +117,7 @@ npm run preview
 - Сообщения об ошибках и повтор запроса; поиск доступен во время загрузки
 - Адаптивный интерфейс для телефона, планшета и компьютера в локальной сети
 
-Погода загружается из [Open-Meteo](https://open-meteo.com), поиск городов использует [OpenStreetMap Nominatim](https://nominatim.org). API ключи и регистрация не нужны. Для свежего прогноза и поиска требуется интернет.
+Погода и поиск городов используют [Open-Meteo](https://open-meteo.com) и [GeoNames](https://www.geonames.org); определение местоположения также использует [OpenStreetMap Nominatim](https://nominatim.org). API ключи и регистрация не нужны. Для свежего прогноза и поиска требуется интернет. Источники данных указаны внизу приложения.
 
 ### 🧰 Требования
 

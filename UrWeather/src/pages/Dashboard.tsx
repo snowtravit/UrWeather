@@ -87,6 +87,15 @@ export default function Dashboard() {
             </div>
           </main>
         )}
+        <footer className="pb-4 text-center text-xs leading-6 text-white/70">
+          {lang === 'ru' ? 'Погодные данные: ' : 'Weather data: '}
+          <a className="underline hover:text-white" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
+          {' · '}
+          {lang === 'ru' ? 'Поиск городов: ' : 'Location data: '}
+          <a className="underline hover:text-white" href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>
+          {' / '}
+          <a className="underline hover:text-white" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
+        </footer>
       </div>
     </div>
   );
