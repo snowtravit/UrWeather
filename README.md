@@ -4,9 +4,49 @@ A local weather dashboard built with React, TypeScript, Vite, Tailwind CSS and F
 
 [English](#english) · [Русский](#русский)
 
+[![Checks](https://github.com/snowtravit/UrWeather/actions/workflows/checks.yml/badge.svg)](https://github.com/snowtravit/UrWeather/actions/workflows/checks.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/snowtravit/UrWeather)](https://github.com/snowtravit/UrWeather/releases/latest)
+
+## 📸 Screenshots / Скриншоты
+
+Real app screenshots from desktop and mobile browser checks. / Скриншоты приложения при проверках в браузере на компьютере и телефоне.
+
+![UrWeather desktop dashboard in Russian](docs/images/desktop.png)
+
+<details>
+<summary>📱 Mobile view / Мобильный интерфейс</summary>
+
+<img src="docs/images/mobile.png" alt="UrWeather mobile dashboard in Russian" width="280">
+
+</details>
+
+<details>
+<summary>❄️ Polar forecast / Прогноз для полюса</summary>
+
+![Polar forecast with unavailable UV and sunrise data](docs/images/polar.png)
+
+</details>
+
+## 📦 Releases / Релизы
+
+Download a versioned build from [GitHub Releases](https://github.com/snowtravit/UrWeather/releases/latest). Read [CHANGELOG.md](CHANGELOG.md) for fixes and verification details. For the source version, follow the setup steps below.
+
+Unpack the web build, open a terminal in the folder containing `index.html`, and serve it over HTTP:
+
+```bash
+python3 -m http.server 8080
+```
+
+Open `http://localhost:8080`. Use `python` if that is your Python 3 command. No Node.js installation is needed for the prebuilt web files.
+
+Готовая сборка доступна в [GitHub Releases](https://github.com/snowtravit/UrWeather/releases/latest). Исправления и результаты проверок описаны в [CHANGELOG.md](CHANGELOG.md). Для запуска из исходников следуйте инструкции ниже.
+
+Распакуйте веб-сборку и выполните `python3 -m http.server 8080` в папке с `index.html`. Откройте `http://localhost:8080`. При необходимости используйте команду `python`. Для готовой сборки Node.js не нужен.
+
 ## English
 
-### Features
+### ✨ Features
 
 - Current conditions, hourly charts and a seven-day forecast
 - Select a day to see its hourly breakdown
@@ -18,13 +58,13 @@ A local weather dashboard built with React, TypeScript, Vite, Tailwind CSS and F
 
 Weather data comes from [Open-Meteo](https://open-meteo.com), and city search uses [OpenStreetMap Nominatim](https://nominatim.org). No API keys or accounts are required. Internet access is needed to fetch fresh weather and search results.
 
-### Requirements
+### 🧰 Requirements
 
 - Node.js 22.12+ recommended; Node.js 20.19+ on the Node 20 release line also works
 - npm, included with Node.js
 - Python 3.8+ only if you use the optional helper scripts
 
-### Getting started
+### 🚀 Getting started
 
 The app and its `package.json` are in the nested `UrWeather/` directory:
 
@@ -39,7 +79,7 @@ Open the URL Vite prints, usually `http://localhost:5173`. To access the app fro
 
 Berlin loads by default. If the browser grants location access, the app tries to use your location. Browser geolocation usually requires HTTPS or localhost, so city search is also available on ordinary local-network HTTP addresses.
 
-### Optional Python helpers
+### 🐍 Optional Python helpers
 
 From the same nested `UrWeather/` directory:
 
@@ -50,7 +90,7 @@ python start.py
 
 Use `python3` if that is your Python 3 command. Setup refreshes dependencies using `npm ci` and creates a local setup marker; start launches the installed Vite through Node.js and prints local and network URLs.
 
-### Checks and production build
+### ✅ Checks and production build
 
 Run these commands from the app directory:
 
@@ -67,7 +107,7 @@ npm run preview
 
 ## Русский
 
-### Возможности
+### ✨ Возможности
 
 - Текущая погода, почасовые графики и прогноз на семь дней
 - Почасовая разбивка выбранного дня
@@ -79,13 +119,13 @@ npm run preview
 
 Погода загружается из [Open-Meteo](https://open-meteo.com), поиск городов использует [OpenStreetMap Nominatim](https://nominatim.org). API ключи и регистрация не нужны. Для свежего прогноза и поиска требуется интернет.
 
-### Требования
+### 🧰 Требования
 
 - Рекомендуется Node.js 22.12+; также подходит Node.js 20.19+ из ветки Node 20
 - npm, который входит в Node.js
 - Python 3.8+ только для необязательных скриптов запуска
 
-### Запуск
+### 🚀 Запуск
 
 Приложение и его `package.json` находятся во вложенной папке `UrWeather/`:
 
@@ -100,7 +140,7 @@ npm run dev
 
 По умолчанию загружается Берлин. Если браузер разрешит доступ к местоположению, приложение попробует загрузить местную погоду. Геолокация обычно доступна только через HTTPS или localhost, поэтому при доступе по обычному HTTP в локальной сети можно выбрать город через поиск.
 
-### Необязательные Python скрипты
+### 🐍 Необязательные Python скрипты
 
 В той же вложенной папке `UrWeather/`:
 
@@ -111,7 +151,7 @@ python start.py
 
 Если Python 3 запускается командой `python3`, используйте её. Setup обновляет зависимости через `npm ci` и создаёт локальный маркер настройки; start запускает установленный Vite через Node.js и выводит адреса для компьютера и других устройств.
 
-### Проверки и сборка
+### ✅ Проверки и сборка
 
 Запускайте команды из папки приложения:
 
@@ -125,3 +165,9 @@ npm run preview
 ```
 
 `npm test` проверяет ошибки и таймауты запросов, повторную загрузку, одновременный поиск, данные кэша, сохранение языка и даты прогноза. `npm audit` проверяет все зависимости, включая инструменты разработки. Тесты Python проверяют ошибки запуска и пути с пробелами. `npm run build` сохраняет сборку в `dist/`; `npm run preview` запускает локальный просмотр сборки. Для разработки есть `npm run test:watch`. GitHub Actions выполняет эти проверки при push и pull request.
+
+## 📜 License / Лицензия
+
+Original project code is available under the [MIT License](LICENSE), © 2026 snowtravit. Imported UI components and dependencies retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Weather and geographic data remain subject to the providers' terms.
+
+Оригинальный код проекта распространяется по [лицензии MIT](LICENSE), © 2026 snowtravit. Заимствованные компоненты и зависимости сохраняют свои лицензии: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Погодные и географические данные используются на условиях их поставщиков.
